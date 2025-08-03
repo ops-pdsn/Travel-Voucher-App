@@ -1,0 +1,23 @@
+:root {
+    --primary: #2170ad;
+    --bg: #f9f9f9;
+    --surface: #ffffff;
+    --text: #333;
+    --accent: #33c5e0;
+  }
+  
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: sans-serif; background: var(--bg); color: var(--text); }
+  
+  .hidden { display: none; }
+  .centered { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+  .nav { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: #fff; padding: 0.5em 1em; }
+  .tabs { display: flex; background: var(--surface); }
+  .tab-btn { flex: 1; padding: 0.75em; border: none; background: var(--surface); cursor: pointer; }
+  .tab-btn.active { border-bottom: 3px solid var(--accent); }
+  .tab { padding: 1em; }
+  .voucher-preview { background: var(--surface); padding: 1em; margin-top: 1em; border: 1px solid #ccc; }
+  input, select, button { margin: 0.5em 0; padding: 0.5em; width: 100%; max-width: 300px; }
+  #expense-list, #voucher-list { list-style: none; margin-top: 1em; }
+  #expense-list li, #voucher-list li { background: var(--surface); margin: 0.25em 0; padding: 0.5em; border: 1px solid #ddd; }
+  

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Expense Voucher Manager</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+  <!-- Login Screen -->
+  <div id="login-screen" class="centered">
+    <h2>Login</h2>
+    <input type="text" id="username-input" placeholder="Enter username" />
+    <button id="login-btn">Log In</button>
+  </div>
+
+  <!-- Main App -->
+  <div id="app" class="hidden">
+    <nav class="nav">
+      <h2>💼 Expense Manager</h2>
+      <span id="user-display"></span>
+      <button id="logout-btn">Logout</button>
+    </nav>
+
+    <div class="tabs">
+      <button data-tab="create" class="tab-btn active">Create Voucher</button>
+      <button data-tab="list" class="tab-btn">My Vouchers</button>
+      <button data-tab="export" class="tab-btn">Export</button>
+    </div>
+
+    <!-- Create Voucher -->
+    <section id="create" class="tab active">
+      <h3>New Voucher</h3>
+      <input type="text" id="voucher-title" placeholder="Title (Project or Month)" />
+      <input type="date" id="voucher-date" />
+
+      <h4>Add Expense</h4>
+      <select id="expense-category">
+        <option value="bus">🚌 Bus</option>
+        <option value="auto">🛺 Auto</option>
+        <option value="taxi">🚖 Taxi</option>
+        <option value="food">🍽️ Food Allowance</option>
+        <option value="fuel">⛽ Fuel (₹3.5/km)</option>
+        <option value="other">📝 Other</option>
+      </select>
+
+      <div id="fuel-input" class="hidden">
+        <input type="number" id="fuel-km" placeholder="Distance (km)" min="0" />
+      </div>
+      <div id="amount-input">
+        <input type="number" id="expense-amount" placeholder="Amount" min="0" step="0.01" />
+      </div>
+      <input type="text" id="expense-desc" placeholder="Description" />
+      <button id="add-expense-btn">Add</button>
+
+      <h4>Expenses</h4>
+      <ul id="expense-list"></ul>
+
+      <p>Total: ₹<span id="total-display">0.00</span></p>
+      <button id="save-draft-btn">Save Draft</button>
+      <button id="submit-btn">Submit Voucher</button>
+    </section>
+
+    <!-- My Vouchers -->
+    <section id="list" class="tab hidden">
+      <h3>My Vouchers</h3>
+      <ul id="voucher-list"></ul>
+    </section>
+
+    <!-- Export -->
+    <section id="export" class="tab hidden">
+      <h3>Export Voucher</h3>
+      <select id="export-select"></select>
+      <div id="voucher-preview" class="voucher-preview"></div>
+      <button id="export-pdf-btn">Export as PDF</button>
+      <button id="export-xlsx-btn">Export as Excel</button>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
