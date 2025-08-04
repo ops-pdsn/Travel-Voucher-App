@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Expense Voucher Manager</title>
+<link rel="stylesheet" href="style.css" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/supabase.min.js"></script>
+</head>
+<body>
+
+<!-- Auth Modal (Login/Register) -->
+<div id="authModal" class="modal" style="display: flex;">
+  <div class="modal__backdrop"></div>
+  <div class="modal__content">
+    <div class="modal__header">
+      <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 16px;">
+        <button type="button" id="loginTabBtn" class="btn btn--primary">Login</button>
+        <button type="button" id="registerTabBtn" class="btn btn--secondary">Register</button>
+      </div>
+      <h3 id="modalTitle">Login</h3>
+    </div>
+    <div class="modal__body">
+      <form id="authForm">
+        <div class="form-group">
+          <label for="authEmail" class="form-label">Email</label>
+          <input type="email" id="authEmail" class="form-control" autocomplete="username" required />
+        </div>
+        <div class="form-group">
+          <label for="authPassword" class="form-label">Password</label>
+          <input type="password" id="authPassword" class="form-control" autocomplete="current-password" required />
+        </div>
+        <button id="authActionBtn" type="submit" class="btn btn--primary">Login</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="appContent" style="display: none;">
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav__brand">
+      <h2>💼 Expense Manager</h2>
+    </div>
+    <div class="nav__menu">
+      <button class="nav__item nav__item--active" data-section="dashboard">Dashboard</button>
+      <button class="nav__item" data-section="create">Create</button>
+      <button class="nav__item" data-section="vouchers">My Vouchers</button>
+      <button class="nav__item" data-section="export">Export</button>
+      <button class="nav__item" id="logoutBtn" style="margin-left:auto; color: var(--color-error); font-weight:600;">Logout</button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="section section--active">
+      <div class="container">
+        <div class="dashboard__header">
+          <h1>Welcome <span id="userNameDisplay">User</span></h1>
+          <p class="dashboard__subtitle">Manage your expense vouchers efficiently</p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-card__icon">📊</div>
+            <div class="stat-card__content">
+              <h3 id="totalVouchers">0</h3>
+              <p>Total Vouchers</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon">💰</div>
+            <div class="stat-card__content">
+              <h3 id="totalExpenses">₹0</h3>
+              <p>Total Expenses</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon">⏳</div>
+            <div class="stat-card__content">
+              <h3 id="pendingVouchers">0</h3>
+              <p>Pending</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="recent-vouchers">
+          <h2>Recent Vouchers</h2>
+          <div id="recentVouchersList" class="voucher-list">
+            <!-- Dynamic content -->
+          </div>
+        </div>
+
+        <button class="btn btn--primary btn--full-width quick-create-btn">
+          ➕ Create New Voucher
+        </button>
+      </div>
+    </section>
+
+    <!-- Create Voucher Section -->
+    <section id="create" class="section">
+      <div class="container">
+        <h1>Create New Voucher</h1>
+        
+        <form id="voucherForm" class="voucher-form">
+          <div class="form-group">
+            <label class="form-label">Voucher Title</label>
+            <input type="text" id="voucherTitle" class="form-control" placeholder="Enter voucher title" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Voucher Type</label>
+            <select id="voucherType" class="form-control" required>
+              <option value="">Select type</option>
+              <option value="Project">Project Based</option>
+              <option value="Month">Monthly</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Date Range</label>
+            <input type="text" id="dateRange" class="form-control" placeholder="e.g., 2025-01-15 to 2025-01-20" required>
+          </div>
+
+          <div class="expenses-section">
+            <div class="expenses-header">
+              <h3>Expenses</h3>
+              <button type="button" class="btn btn--secondary" id="addExpenseBtn">+ Add Expense</button>
+            </div>
+            
+            <div id="expensesList" class="expenses-list">
+              <!-- Dynamic expenses will be added here -->
+            </div>
+
+            <div class="total-section">
+              <div class="total-amount">
+                <strong>Total Amount: ₹<span id="totalAmount">0.00</span></strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn--secondary" id="saveDraftBtn">Save as Draft</button>
+            <button type="submit" class="btn btn--primary">Submit Voucher</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- My Vouchers Section -->
+    <section id="vouchers" class="section">
+      <div class="container">
+        <div class="vouchers-header">
+          <h1>My Vouchers</h1>
+          <div class="filter-controls">
+            <select id="statusFilter" class="form-control">
+              <option value="">All Status</option>
+              <option value="Draft">Draft</option>
+              <option value="Submitted">Submitted</option>
+              <option value="Approved">Approved</option>
+            </select>
+          </div>
+        </div>
+        
+        <div id="allVouchersList" class="voucher-list">
+          <!-- Dynamic content -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Export Section -->
+    <section id="export" class="section">
+      <div class="container">
+        <h1>Export Center</h1>
+        <p>Select a voucher to export in PDF or Excel format</p>
+        
+        <div class="export-controls">
+          <select id="exportVoucherSelect" class="form-control">
+            <option value="">Select voucher to export</option>
+          </select>
+        </div>
+        
+        <div class="export-actions">
+          <button class="btn btn--primary" id="exportPdfBtn" disabled>📄 Export to PDF</button>
+          <button class="btn btn--secondary" id="exportExcelBtn" disabled>📊 Export to Excel</button>
+        </div>
+
+        <div id="exportPreview" class="export-preview">
+          <!-- Preview content -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Expense Item Modal -->
+  <div id="expenseModal" class="modal hidden">
+    <div class="modal__backdrop"></div>
+    <div class="modal__content">
+      <div class="modal__header">
+        <h3>Add Expense</h3>
+        <button class="modal__close">&times;</button>
+      </div>
+      <form id="expenseForm" class="modal__body">
+        <div class="form-group">
+          <label class="form-label">Date</label>
+          <input type="date" id="expenseDate" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select id="expenseCategory" class="form-control" required>
+            <option value="">Select category</option>
+            <option value="bus">🚌 Bus</option>
+            <option value="auto">🛺 Auto Rickshaw</option>
+            <option value="taxi">🚖 Taxi</option>
+            <option value="food">🍽️ Food Allowance</option>
+            <option value="fuel">⛽ Fuel (₹3.5/L)</option>
+            <option value="other">📝 Other Expenses</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="fuelQuantityGroup" style="display: none;">
+          <label class="form-label">Fuel Quantity (Liters)</label>
+          <input type="number" id="fuelQuantity" class="form-control" step="0.1" placeholder="Enter liters">
+          <small class="form-help">Amount will be calculated at ₹3.5 per liter</small>
+        </div>
+
+        <div class="form-group" id="amountGroup">
+          <label class="form-label">Amount (₹)</label>
+          <input type="number" id="expenseAmount" class="form-control" step="0.01" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea id="expenseDescription" class="form-control" rows="3" placeholder="Enter description"></textarea>
+        </div>
+      </form>
+      <div class="modal__footer">
+        <button type="button" class="btn btn--secondary" id="cancelExpenseBtn">Cancel</button>
+        <button type="button" class="btn btn--primary" id="saveExpenseBtn">Save Expense</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success/Error Messages -->
+  <div id="messageContainer" class="message-container">
+    <!-- Dynamic messages -->
+  </div>
+</div>
+<!-- Remove all existing script tags and replace with these -->
+<script type="module">
+  // Wait for DOM to be ready
+  document.addEventListener('DOMContentLoaded', () => {
+    // Initialize the app only after DOM is ready
+    window.expenseApp = new ExpenseVoucherApp();
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/supabase.min.js"></script>
+<script type="module" src="auth.js"></script>
+<script src="app.js"></script>
+
+
+</body>
+</html>
