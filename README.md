@@ -6,9 +6,9 @@
 3. `npm init -y` (optional for project metadata)
 
 ## To Run the application locally
-1. python -m http.server 5500
+1. `python -m http.server 5500`
  or
-2. npx live-server
+2. `npx live-server`
 
 
 
